@@ -1,0 +1,25 @@
+logs
+target
+/.classpath
+/.project
+/.settings
+/RUNNING_PID
+
+dist/*
+lib_managed/
+src_managed/
+.history
+.cache
+.lib/
+native/
+
+*.class
+*.log
+
+# Idea
+*.iml
+.idea
+.idea_modules
+
+# Mac OS X
+.DS_Store
