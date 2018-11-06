@@ -8,6 +8,7 @@ import com.typesafe.config.ConfigFactory
 import pl.nadoba.currencyapi.config.{CurrencyApiConfig, FixerConfig}
 import pl.nadoba.currencyapi.fixer.FixerClientImpl
 import pl.nadoba.currencyapi.routes.CurrencyApiRoutes
+import pl.nadoba.currencyapi.service.CurrencyRatesServiceImpl
 
 import scala.io.StdIn
 import scala.util.Try
@@ -24,8 +25,10 @@ object Main extends App {
   import currencyApiConfig.{host => currencyApiHost, port => currencyApiPort}
 
   val fixerClient = new FixerClientImpl(fixerConfig)
+  val currencyRatesService = new CurrencyRatesServiceImpl(fixerClient)
+  val currencyApiRoutes = new CurrencyApiRoutes(currencyRatesService)
 
-  val bindingFuture = Http().bindAndHandle(CurrencyApiRoutes.route, currencyApiHost, currencyApiPort)
+  val bindingFuture = Http().bindAndHandle(currencyApiRoutes.route, currencyApiHost, currencyApiPort)
 
   println(s"Server online at http://$currencyApiHost:$currencyApiPort/\nPress RETURN to stop...")
 
