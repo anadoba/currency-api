@@ -6,6 +6,8 @@ import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import pl.nadoba.currencyapi.config.{CurrencyApiConfig, FixerConfig}
+import pl.nadoba.currencyapi.fixer.{FixerClientImpl, FixerRatesResponse}
+import pl.nadoba.currencyapi.models.Currency
 import pl.nadoba.currencyapi.routes.CurrencyApiRoutes
 
 import scala.io.StdIn
@@ -21,6 +23,8 @@ object Main extends App {
   val fixerConfig = FixerConfig.load(config)
   val currencyApiConfig = CurrencyApiConfig.load(config)
   import currencyApiConfig.{host => currencyApiHost, port => currencyApiPort}
+
+  val fixerClient = new FixerClientImpl(fixerConfig)
 
   val bindingFuture = Http().bindAndHandle(CurrencyApiRoutes.route, currencyApiHost, currencyApiPort)
 

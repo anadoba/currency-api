@@ -10,6 +10,8 @@ object Dependencies {
 
   val dependencies = Seq(
     "com.typesafe.akka" %% "akka-http" % Version.akkaHttp,
+    "de.heikoseeberger" %% "akka-http-play-json" % "1.22.0",
+    "com.typesafe.play" %% "play-json" % "2.6.10",
     "com.typesafe.akka" %% "akka-stream" % Version.akkaStream,
     "com.typesafe" % "config" % "1.3.2",
     "com.typesafe.akka" %% "akka-http-testkit" % Version.akkaHttp % "test",
