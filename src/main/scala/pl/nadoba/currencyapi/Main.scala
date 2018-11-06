@@ -4,6 +4,8 @@ import akka.Done
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
+import com.typesafe.config.ConfigFactory
+import pl.nadoba.currencyapi.config.{CurrencyApiConfig, FixerConfig}
 import pl.nadoba.currencyapi.routes.CurrencyApiRoutes
 
 import scala.io.StdIn
@@ -15,12 +17,14 @@ object Main extends App {
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
 
-  val host = "localhost"
-  val port = 9000
+  val config = ConfigFactory.load()
+  val fixerConfig = FixerConfig.load(config)
+  val currencyApiConfig = CurrencyApiConfig.load(config)
+  import currencyApiConfig.{host => currencyApiHost, port => currencyApiPort}
 
-  val bindingFuture = Http().bindAndHandle(CurrencyApiRoutes.route, host, port)
+  val bindingFuture = Http().bindAndHandle(CurrencyApiRoutes.route, currencyApiHost, currencyApiPort)
 
-  println(s"Server online at http://$host:$port/\nPress RETURN to stop...")
+  println(s"Server online at http://$currencyApiHost:$currencyApiPort/\nPress RETURN to stop...")
 
   StdIn.readLine()
 
@@ -29,7 +33,7 @@ object Main extends App {
     .onComplete(shutdownHook)
 
   private def shutdownHook(httpTerminationTry: Try[Done]): Unit = {
-    httpTerminationTry.map(_ => ()).recover {
+    httpTerminationTry.recover {
       case ex => println(s"Error during shutdown: $ex")
     }
     system.terminate()
