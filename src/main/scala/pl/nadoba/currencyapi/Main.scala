@@ -6,8 +6,7 @@ import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import pl.nadoba.currencyapi.config.{CurrencyApiConfig, FixerConfig}
-import pl.nadoba.currencyapi.fixer.{FixerClientImpl, FixerRatesResponse}
-import pl.nadoba.currencyapi.models.Currency
+import pl.nadoba.currencyapi.fixer.FixerClientImpl
 import pl.nadoba.currencyapi.routes.CurrencyApiRoutes
 
 import scala.io.StdIn
