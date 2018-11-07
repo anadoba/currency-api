@@ -7,7 +7,7 @@ import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import pl.nadoba.currencyapi.config.{CurrencyApiConfig, CurrencyMonitoringConfig, FixerConfig}
 import pl.nadoba.currencyapi.fixer.FixerClientImpl
-import pl.nadoba.currencyapi.routes.{CurrencyMonitoringRoute, CurrencyRatesRoute}
+import pl.nadoba.currencyapi.routes.{CurrencyMonitoringRoute, CurrencyRatesRoute, IndexRoute}
 import pl.nadoba.currencyapi.service.{CurrencyMonitoringServiceImpl, CurrencyMonitoringStreamSpawn, CurrencyRatesChangeHookImpl, CurrencyRatesServiceImpl}
 import akka.http.scaladsl.server.Directives._
 import com.typesafe.scalalogging.LazyLogging
@@ -35,7 +35,7 @@ object Main extends App with LazyLogging {
   val monitoringService = new CurrencyMonitoringServiceImpl(monitoringStreamSpawn)
   val currencyRatesRoute = new CurrencyRatesRoute(currencyRatesService)
   val currencyMonitoringRoute = new CurrencyMonitoringRoute(monitoringService)
-  val route = currencyRatesRoute.currencyRatesRoute ~ currencyMonitoringRoute.monitoringRoute
+  val route = IndexRoute.route ~ currencyRatesRoute.currencyRatesRoute ~ currencyMonitoringRoute.monitoringRoute
 
   val bindingFuture = Http().bindAndHandle(route, currencyApiHost, currencyApiPort)
 
@@ -48,6 +48,7 @@ object Main extends App with LazyLogging {
     .onComplete(shutdownHook)
 
   private def shutdownHook(httpTerminationTry: Try[Done]): Unit = {
+    logger.info("Shutting down...")
     httpTerminationTry.recover {
       case ex => logger.error(s"Error during shutdown", ex)
     }

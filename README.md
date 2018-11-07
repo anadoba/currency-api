@@ -2,11 +2,16 @@
 
 [Assignment description](./Assignment.md)
 
+You can run the solution by cloning this repository and executing
+`sbt run`
+Press Return to stop the app.
+
+Application provides a basic index page with example endpoint invocations on
+http://localhost:9000/
+
 ## API
 
-Run the app using `sbt run`.
-
-Exposed API contains only GET requests so it's convenient to use from a browser.
+Exposed API contains only GET requests and query parameters so it's convenient to use from a browser.
 Fixer platform connectivity is established under the hood - one can override used Fixer Access Key by setting `FIXER_ACCESS_KEY` env variable.
 
 ### Currency rates endpoints
