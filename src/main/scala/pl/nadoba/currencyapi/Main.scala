@@ -8,7 +8,7 @@ import com.typesafe.config.ConfigFactory
 import pl.nadoba.currencyapi.config.{CurrencyApiConfig, FixerConfig}
 import pl.nadoba.currencyapi.fixer.FixerClientImpl
 import pl.nadoba.currencyapi.routes.CurrencyApiRoutes
-import pl.nadoba.currencyapi.service.CurrencyRatesServiceImpl
+import pl.nadoba.currencyapi.service.{CurrencyMonitoringServiceImpl, CurrencyRatesServiceImpl}
 
 import scala.io.StdIn
 import scala.util.Try
@@ -26,7 +26,8 @@ object Main extends App {
 
   val fixerClient = new FixerClientImpl(fixerConfig)
   val currencyRatesService = new CurrencyRatesServiceImpl(fixerClient)
-  val currencyApiRoutes = new CurrencyApiRoutes(currencyRatesService)
+  val currencyMonitoringService = new CurrencyMonitoringServiceImpl(currencyRatesService)
+  val currencyApiRoutes = new CurrencyApiRoutes(currencyRatesService, currencyMonitoringService)
 
   val bindingFuture = Http().bindAndHandle(currencyApiRoutes.route, currencyApiHost, currencyApiPort)
 

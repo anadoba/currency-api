@@ -2,24 +2,23 @@ package pl.nadoba.currencyapi.routes
 
 import java.time.ZonedDateTime
 
-import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.unmarshalling.Unmarshaller
 import pl.nadoba.currencyapi.models.Currency
-import pl.nadoba.currencyapi.service.CurrencyRatesService
+import pl.nadoba.currencyapi.service.{CurrencyMonitoringService, CurrencyRatesService}
 import akka.http.scaladsl.model.StatusCodes.{InternalServerError, OK}
 import de.heikoseeberger.akkahttpplayjson.PlayJsonSupport
 import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext
 
-class CurrencyApiRoutes(currencyRatesService: CurrencyRatesService)(implicit ec: ExecutionContext) extends  PlayJsonSupport {
+class CurrencyApiRoutes(currencyRatesService: CurrencyRatesService, monitoringService: CurrencyMonitoringService)(implicit ec: ExecutionContext) extends PlayJsonSupport {
 
   import pl.nadoba.currencyapi.models.JsonFormats.{currencyApiResponseWrites, currencyApiErrorResponseWrites}
 
   private val zonedDateTimeU = Unmarshaller.strict[String, ZonedDateTime](ZonedDateTime.parse(_))
 
-  val route =
+  val currencyRatesRoute =
     path("rates") {
       parameters('base, 'target.?, 'timestamp.as(zonedDateTimeU).?) { (base, targetOpt, timestampOpt) =>
         get {
@@ -39,5 +38,35 @@ class CurrencyApiRoutes(currencyRatesService: CurrencyRatesService)(implicit ec:
         }
       }
     }
+
+  val monitoringRoute =
+    get {
+      path("monitoring") {
+        complete {
+          val response = monitoringService.listMonitoredCurrencies
+          OK -> Json.toJson(response)
+        }
+      } ~
+      path("monitoring" / "start") {
+        parameter("currency") { currencyString =>
+          val currency = Currency(currencyString)
+          complete {
+            val response = monitoringService.startMonitoring(currency)
+            OK -> Json.toJson(response)
+          }
+        }
+      } ~
+      path("monitoring" / "stop") {
+        parameter("currency") { currencyString =>
+          val currency = Currency(currencyString)
+          complete {
+            val response = monitoringService.stopMonitoring(currency)
+            OK -> Json.toJson(response)
+          }
+        }
+      }
+    }
+
+  val route = currencyRatesRoute ~ monitoringRoute
 
 }
