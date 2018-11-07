@@ -16,6 +16,7 @@ object Dependencies {
     "com.typesafe" % "config" % "1.3.2",
     "com.typesafe.akka" %% "akka-http-testkit" % Version.akkaHttp % "test",
     "org.scalatest" %% "scalatest" % "3.0.5" % "test",
-    "com.github.tomakehurst" % "wiremock" % "2.19.0" % "test"
+    "com.github.tomakehurst" % "wiremock" % "2.19.0" % "test",
+    "org.mockito" % "mockito-core" % "2.8.47" % "test"
   )
 }

@@ -1,15 +1,16 @@
 package pl.nadoba.currencyapi.service
 
-import akka.{Done, NotUsed}
+import akka.NotUsed
 import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{KillSwitches, Materializer, SharedKillSwitch}
 import pl.nadoba.currencyapi.config.CurrencyMonitoringConfig
 import pl.nadoba.currencyapi.models.Currency
 
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future}
 
-class CurrencyMonitoringStreamSpawn(ratesService: CurrencyRatesService,
+class CurrencyMonitoringStreamSpawn(
+  ratesService: CurrencyRatesService,
   monitoringConfig: CurrencyMonitoringConfig,
   onChangeHook: CurrencyRatesChangeHook)(
   implicit materializer: Materializer, ec: ExecutionContext
