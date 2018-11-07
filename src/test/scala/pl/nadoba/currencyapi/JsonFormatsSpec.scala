@@ -6,9 +6,11 @@ import org.scalatest.{MustMatchers, WordSpec}
 import pl.nadoba.currencyapi.fixer.{FixerErrorInfo, FixerErrorResponse, FixerRatesResponse}
 import pl.nadoba.currencyapi.models.{Currency, JsonFormats}
 import play.api.libs.json.Json
-import pl.nadoba.currencyapi.testUtils.TestHelpers.stringDoubleTupleToCurrencyRate
 
 class JsonFormatsSpec extends WordSpec with MustMatchers {
+
+  implicit def stringDoubleTupleToCurrencyRate(tuple: (String, Double)): (Currency, BigDecimal) =
+    (Currency(tuple._1), BigDecimal(tuple._2))
 
   "Json Formats" should {
     "read successful JSON response from Fixer platform" in {

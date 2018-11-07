@@ -17,8 +17,10 @@ class CurrencyRatesServiceImpl(fixerClient: FixerClient)(implicit ec: ExecutionC
     val fixerResponseF = zonedDateTimeOpt match {
       case Some(zonedDateTime) =>
         val date = zonedDateTime.toLocalDate
+        println(s"Getting historical currency rates for base ${base.symbol} / $date / limit to $targetOpt")
         fixerClient.getHistoricalCurrencyRates(base, date, targetOpt)
       case None =>
+        println(s"Getting latest currency rates for base ${base.symbol} / limit to $targetOpt")
         fixerClient.getLatestCurrencyRates(base, targetOpt)
     }
 
