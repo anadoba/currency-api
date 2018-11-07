@@ -15,6 +15,7 @@ object Dependencies {
     "com.typesafe.akka" %% "akka-stream" % Version.akkaStream,
     "com.typesafe" % "config" % "1.3.2",
     "com.typesafe.akka" %% "akka-http-testkit" % Version.akkaHttp % "test",
-    "org.scalatest" %% "scalatest" % "3.0.5" % "test"
+    "org.scalatest" %% "scalatest" % "3.0.5" % "test",
+    "com.github.tomakehurst" % "wiremock" % "2.19.0" % "test"
   )
 }

@@ -6,7 +6,7 @@ import org.scalatest.{MustMatchers, WordSpec}
 import pl.nadoba.currencyapi.fixer.{FixerErrorInfo, FixerErrorResponse, FixerRatesResponse}
 import pl.nadoba.currencyapi.models.{Currency, JsonFormats}
 import play.api.libs.json.Json
-import TestHelpers._
+import pl.nadoba.currencyapi.testUtils.TestHelpers.stringDoubleTupleToCurrencyRate
 
 class JsonFormatsSpec extends WordSpec with MustMatchers {
 

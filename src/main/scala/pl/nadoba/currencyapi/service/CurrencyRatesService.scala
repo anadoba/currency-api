@@ -27,7 +27,7 @@ class CurrencyRatesServiceImpl(fixerClient: FixerClient)(implicit ec: ExecutionC
         val zonedDateTime = zonedDateTimeOpt.getOrElse(ZonedDateTime.now())
         val response = CurrencyRatesResponse(base, zonedDateTime, ratesResponse.rates)
         Right(response)
-        
+
       case FixerErrorResponse(_, errorInfo) =>
         val errorMsg = s"Fixer platform returned error [${errorInfo.`type`}], code ${errorInfo.code}"
         Left(CurrencyApiErrorResponse(errorMsg))

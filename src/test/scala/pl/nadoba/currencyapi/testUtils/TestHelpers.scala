@@ -1,4 +1,4 @@
-package pl.nadoba.currencyapi
+package pl.nadoba.currencyapi.testUtils
 
 import pl.nadoba.currencyapi.models.Currency
 

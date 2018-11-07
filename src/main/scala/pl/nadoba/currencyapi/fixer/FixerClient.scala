@@ -5,7 +5,7 @@ import java.time.LocalDate
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.Uri.Query
-import akka.http.scaladsl.model.{HttpRequest, Uri}
+import akka.http.scaladsl.model.{ContentTypes, HttpRequest, Uri}
 import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.Materializer
@@ -58,6 +58,7 @@ class FixerClientImpl(fixerConfig: FixerConfig)
   private def executeRequest(request: HttpRequest): Future[FixerResponse] = {
     Http()
       .singleRequest(request)
+      .map(_.entity.withContentType(ContentTypes.`application/json`))
       .flatMap(Unmarshal(_).to[FixerResponse])
   }
 
