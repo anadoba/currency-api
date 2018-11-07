@@ -10,11 +10,12 @@ import pl.nadoba.currencyapi.fixer.FixerClientImpl
 import pl.nadoba.currencyapi.routes.{CurrencyMonitoringRoute, CurrencyRatesRoute}
 import pl.nadoba.currencyapi.service.{CurrencyMonitoringServiceImpl, CurrencyMonitoringStreamSpawn, CurrencyRatesChangeHookImpl, CurrencyRatesServiceImpl}
 import akka.http.scaladsl.server.Directives._
+import com.typesafe.scalalogging.LazyLogging
 
 import scala.io.StdIn
 import scala.util.Try
 
-object Main extends App {
+object Main extends App with LazyLogging {
 
   implicit val system = ActorSystem("currency-api-system")
   implicit val materializer = ActorMaterializer()
@@ -38,7 +39,7 @@ object Main extends App {
 
   val bindingFuture = Http().bindAndHandle(route, currencyApiHost, currencyApiPort)
 
-  println(s"Server online at http://$currencyApiHost:$currencyApiPort/\nPress RETURN to stop...")
+  logger.info(s"Server online at http://$currencyApiHost:$currencyApiPort/\nPress RETURN to stop...")
 
   StdIn.readLine()
 
@@ -48,7 +49,7 @@ object Main extends App {
 
   private def shutdownHook(httpTerminationTry: Try[Done]): Unit = {
     httpTerminationTry.recover {
-      case ex => println(s"Error during shutdown: $ex")
+      case ex => logger.error(s"Error during shutdown", ex)
     }
     system.terminate()
     materializer.shutdown()

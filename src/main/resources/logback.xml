@@ -1,0 +1,15 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5level %logger{25} - %message%n%xException{10}</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="pl.nadoba" level="DEBUG" />
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>

@@ -6,19 +6,22 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
+import com.typesafe.scalalogging.LazyLogging
 import de.heikoseeberger.akkahttpplayjson.PlayJsonSupport
 import pl.nadoba.currencyapi.config.CurrencyMonitoringConfig
 import pl.nadoba.currencyapi.models.Currency
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
 
 trait CurrencyRatesChangeHook {
   def execute(currency: Currency): Future[Done]
 }
 
 class CurrencyRatesChangeHookImpl(monitoringConfig: CurrencyMonitoringConfig)
-  (implicit system: ActorSystem, materializer: Materializer, ec: ExecutionContext) extends CurrencyRatesChangeHook with PlayJsonSupport {
+  (implicit system: ActorSystem, materializer: Materializer, ec: ExecutionContext)
+  extends CurrencyRatesChangeHook
+  with PlayJsonSupport
+  with LazyLogging {
 
   import pl.nadoba.currencyapi.formats.JsonFormats.currencyWrites
 
@@ -34,13 +37,13 @@ class CurrencyRatesChangeHookImpl(monitoringConfig: CurrencyMonitoringConfig)
         entity = requestEntity
       )
       response <- Http().singleRequest(postRequest)
-      _ = println(s"Webhook called for currency ${currency.symbol} - response status ${response.status}")
+      _ = logger.debug(s"Webhook called for currency ${currency.symbol} - response status ${response.status}")
       _ = response.entity.discardBytes()
     } yield Done
 
     result.recover {
       case ex =>
-        println(s"Error when calling webhook - $ex")
+        logger.warn(s"Error when calling webhook for currency rates change", ex)
         Done
     }
   }

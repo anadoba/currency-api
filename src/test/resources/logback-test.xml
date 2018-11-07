@@ -1,0 +1,16 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5level %logger{25} - %message%n%xException{10}</pattern>
+        </encoder>
+    </appender>
+
+    <!--disable warnings for unit tests-->
+    <logger name="org.eclipse.jetty.util.thread" level="ERROR"/>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>
