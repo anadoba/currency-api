@@ -1,47 +1,29 @@
 # Flow Currency Rates
 
-The Flow Commerce platform needs to consume and make available
-currency exchange rates, for both internal and external use.
+[Assignment description](./Assignment.md)
 
-There are two specific use cases we need to support. Implement these
-use cases using your Scala framework of choice and [Currency rates from
-Fixer.io](http://fixer.io/). If you decide to use Play, you can clone a Play 2.5 application template [here](https://github.com/flowcommerce/play-scala-2.5).
+## API
 
-## Use case 1: REST API
+Run the app using `sbt run`.
 
-Implement a REST API to access currency information, providing at a
-minimum:
+Exposed API contains only GET requests so it's convenient to use from a browser.
+Fixer platform connectivity is established under the hood - one can override used Fixer Access Key by setting `FIXER_ACCESS_KEY` env variable.
 
-  - A user should be able to:
+### Currency rates endpoints
+- http://localhost:9000/rates?base=USD
+- http://localhost:9000/rates?base=USD&target=CAD
+- http://localhost:9000/rates?base=USD&timestamp=2016-05-01T14:34:46Z
+- http://localhost:9000/rates?base=USD&target=CAD&timestamp=2016-05-01T14:34:46Z
 
-        curl localhost:9000/rates?base=USD
+### Currency rates monitoring
+- http://localhost:9000/monitoring - lists all currently monitored currency rates
+- http://localhost:9000/monitoring/start?currency=USD - starts monitoring currency rates for USD
+- http://localhost:9000/monitoring/stop?currency=USD - stops monitoring currency rates for USD
 
-    returns a list of all of the latest currency rates from the USD to
-    all other currencies.
+## Libraries used
 
-  - A user should be able to:
-
-        curl localhost:9000/rates?base=USD&target=CAD
-
-    return a list of the latest current rate from USD to CAD
-
-  - A user should be able to provide a timestamp which would
-    return the currency rate at that moment in time.
-
-        curl localhost:9000/rates?base=USD&timestamp=2016-05-01T14:34:46Z
-
-    returns a list of all of the currency rates from the USD to all
-    other currencies at this time (May 1, 2016 at 14:34:46 UTC in this
-    example)
-
-
-## Use case 2: Publishing
-
-We know that currency rates fluctuate continuously. A key feature of
-the system is to enable our clients to register a webhook to receive
-notifications in real time whenever a currency rate changes.
-
-Implement the publishing system so that whenever a currency rate is
-updated, an HTTP POST to the webhook URL is triggered. For the
-purposes of this exercise, we will assume the webhook URL is always
-http://localhost:7091/webhooks.
+- Akka HTTP - faster than Play Framework; there was no need to use for example templates, forms, database support etc
+- Akka Streams - ideal for endless source of data like a loop of currency rate requests for monitoring
+- WireMock - mock http server for unit tests
+- Mockito - useful methods for verifying interactions between the test objects
+- Play JSON - personal taste :)
