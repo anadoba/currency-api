@@ -5,10 +5,10 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
-import pl.nadoba.currencyapi.config.{CurrencyApiConfig, FixerConfig}
+import pl.nadoba.currencyapi.config.{CurrencyApiConfig, CurrencyMonitoringConfig, FixerConfig}
 import pl.nadoba.currencyapi.fixer.FixerClientImpl
 import pl.nadoba.currencyapi.routes.CurrencyApiRoutes
-import pl.nadoba.currencyapi.service.{CurrencyMonitoringServiceImpl, CurrencyRatesServiceImpl}
+import pl.nadoba.currencyapi.service.{CurrencyMonitoringServiceImpl, CurrencyMonitoringStreamSpawn, CurrencyRatesChangeHookImpl, CurrencyRatesServiceImpl}
 
 import scala.io.StdIn
 import scala.util.Try
@@ -22,12 +22,16 @@ object Main extends App {
   val config = ConfigFactory.load()
   val fixerConfig = FixerConfig.load(config)
   val currencyApiConfig = CurrencyApiConfig.load(config)
+  val monitoringConfig = CurrencyMonitoringConfig.load(config)
   import currencyApiConfig.{host => currencyApiHost, port => currencyApiPort}
 
   val fixerClient = new FixerClientImpl(fixerConfig)
   val currencyRatesService = new CurrencyRatesServiceImpl(fixerClient)
-  val currencyMonitoringService = new CurrencyMonitoringServiceImpl(currencyRatesService)
-  val currencyApiRoutes = new CurrencyApiRoutes(currencyRatesService, currencyMonitoringService)
+
+  val currencyRatesChangeHook = new CurrencyRatesChangeHookImpl(monitoringConfig)
+  val monitoringStreamSpawn = new CurrencyMonitoringStreamSpawn(currencyRatesService, monitoringConfig, currencyRatesChangeHook)
+  val monitoringService = new CurrencyMonitoringServiceImpl(monitoringStreamSpawn)
+  val currencyApiRoutes = new CurrencyApiRoutes(currencyRatesService, monitoringService)
 
   val bindingFuture = Http().bindAndHandle(currencyApiRoutes.route, currencyApiHost, currencyApiPort)
 

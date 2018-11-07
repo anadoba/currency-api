@@ -1,5 +1,6 @@
 package pl.nadoba.currencyapi.service
 
+import akka.stream.SharedKillSwitch
 import pl.nadoba.currencyapi.models.MonitoringServiceResponse.{AlreadyMonitoring, MonitoringServiceResponse, NotMonitoredYet, StartedMonitoring, StoppedMonitoring}
 import pl.nadoba.currencyapi.models._
 
@@ -9,32 +10,39 @@ trait CurrencyMonitoringService {
   def stopMonitoring(currency: Currency): MonitoringServiceResponse
 }
 
-class CurrencyMonitoringServiceImpl(ratesService: CurrencyRatesService) extends CurrencyMonitoringService {
+class CurrencyMonitoringServiceImpl(monitoringStreamSpawn: CurrencyMonitoringStreamSpawn) extends CurrencyMonitoringService {
 
-  private var monitoredCurrencies: Set[Currency] = Set.empty
+  private var monitoredCurrencies: Map[Currency, SharedKillSwitch] = Map.empty
 
   override def listMonitoredCurrencies: MonitoringServiceResponse =
-    MonitoringServiceResponse(monitoredCurrencies, None)
+    MonitoringServiceResponse(monitoredCurrencies.keys.toSet, None)
 
   override def startMonitoring(currency: Currency): MonitoringServiceResponse = {
-    val status = if (monitoredCurrencies.contains(currency)) {
-      AlreadyMonitoring
-    } else {
-      monitoredCurrencies += currency
-      StartedMonitoring
+    val status = monitoredCurrencies.get(currency) match {
+      case None =>
+        val killSwitch = monitoringStreamSpawn.spawn(currency)
+        monitoredCurrencies += (currency -> killSwitch)
+        StartedMonitoring
+
+      case Some(_) =>
+        AlreadyMonitoring
     }
 
-    MonitoringServiceResponse(monitoredCurrencies, Some(status))
+    MonitoringServiceResponse(monitoredCurrencies.keys.toSet, Some(status))
   }
 
   override def stopMonitoring(currency: Currency): MonitoringServiceResponse = {
-    val status = if (monitoredCurrencies.contains(currency)) {
-      monitoredCurrencies -= currency
-      StoppedMonitoring
-    } else {
-      NotMonitoredYet
+    val status = monitoredCurrencies.get(currency) match {
+      case Some(killSwitch) =>
+        killSwitch.shutdown()
+        monitoredCurrencies -= currency
+        StoppedMonitoring
+
+      case None =>
+        NotMonitoredYet
     }
 
-    MonitoringServiceResponse(monitoredCurrencies, Some(status))
+    MonitoringServiceResponse(monitoredCurrencies.keys.toSet, Some(status))
   }
+
 }

@@ -21,11 +21,7 @@ class CurrencyApiRoutesSpec extends WordSpec with ScalatestRouteTest with MustMa
   }
 
   trait Context {
-    val currencyRatesService = new CurrencyRatesService {
-      override def getCurrencyRates(base: Currency, zonedDateTimeOpt: Option[ZonedDateTime], targetOpt: Option[Currency]): Future[Either[CurrencyApiErrorResponse, CurrencyRatesResponse]] =
-        Future.successful(Left(CurrencyApiErrorResponse("fake")))
-    }
-    val testRoute = new CurrencyApiRoutes(currencyRatesService).route
+    val testRoute = new CurrencyApiRoutes(null, null).route
   }
 
 }
