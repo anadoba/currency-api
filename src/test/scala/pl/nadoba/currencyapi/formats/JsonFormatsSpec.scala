@@ -1,10 +1,10 @@
-package pl.nadoba.currencyapi
+package pl.nadoba.currencyapi.formats
 
 import java.time.LocalDate
 
 import org.scalatest.{MustMatchers, WordSpec}
 import pl.nadoba.currencyapi.fixer.{FixerErrorInfo, FixerErrorResponse, FixerRatesResponse}
-import pl.nadoba.currencyapi.models.{Currency, JsonFormats}
+import pl.nadoba.currencyapi.models.Currency
 import play.api.libs.json.Json
 
 class JsonFormatsSpec extends WordSpec with MustMatchers {

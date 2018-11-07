@@ -1,4 +1,4 @@
-package pl.nadoba.currencyapi
+package pl.nadoba.currencyapi.fixer
 
 import java.time.LocalDate
 
@@ -7,7 +7,6 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
 import org.scalatest.{Assertion, BeforeAndAfterEach, MustMatchers}
 import pl.nadoba.currencyapi.config.FixerConfig
-import pl.nadoba.currencyapi.fixer.{FixerClientImpl, FixerErrorInfo, FixerErrorResponse, FixerRatesResponse}
 import pl.nadoba.currencyapi.models.Currency
 import pl.nadoba.currencyapi.testUtils.{ActorSpec, ScalaFuturesConfigured}
 import play.api.libs.json.Json

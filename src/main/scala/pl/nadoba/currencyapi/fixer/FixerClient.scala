@@ -25,7 +25,7 @@ class FixerClientImpl(fixerConfig: FixerConfig)
   extends FixerClient
     with PlayJsonSupport {
 
-  import pl.nadoba.currencyapi.models.JsonFormats._
+  import pl.nadoba.currencyapi.formats.JsonFormats._
 
   private val tokenQueryParam = "access_key" -> fixerConfig.accessKey
 

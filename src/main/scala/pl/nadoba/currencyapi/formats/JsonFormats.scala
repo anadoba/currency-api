@@ -1,6 +1,7 @@
-package pl.nadoba.currencyapi.models
+package pl.nadoba.currencyapi.formats
 
 import pl.nadoba.currencyapi.fixer.{FixerErrorInfo, FixerErrorResponse, FixerRatesResponse, FixerResponse}
+import pl.nadoba.currencyapi.models.{Currency, CurrencyApiErrorResponse, CurrencyRatesResponse}
 import play.api.libs.json._
 
 

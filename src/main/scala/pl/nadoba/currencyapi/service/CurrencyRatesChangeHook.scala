@@ -18,7 +18,7 @@ trait CurrencyRatesChangeHook {
 class CurrencyRatesChangeHookImpl(monitoringConfig: CurrencyMonitoringConfig)
   (implicit system: ActorSystem, ec: ExecutionContext) extends CurrencyRatesChangeHook with PlayJsonSupport {
 
-  import pl.nadoba.currencyapi.models.JsonFormats.currencyWrites
+  import pl.nadoba.currencyapi.formats.JsonFormats.currencyWrites
 
   private val webhookUri = Uri(monitoringConfig.webhook)
 

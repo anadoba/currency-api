@@ -1,17 +1,16 @@
-package pl.nadoba.currencyapi
+package pl.nadoba.currencyapi.service
 
 import java.time.{ZoneId, ZonedDateTime}
 
 import akka.Done
 import com.typesafe.config.ConfigFactory
+import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import pl.nadoba.currencyapi.config.CurrencyMonitoringConfig
 import pl.nadoba.currencyapi.models.{Currency, CurrencyApiErrorResponse, CurrencyRatesResponse}
-import pl.nadoba.currencyapi.service.{CurrencyMonitoringStreamSpawn, CurrencyRatesChangeHook, CurrencyRatesService}
+import pl.nadoba.currencyapi.testUtils.ActorSpec
 
 import scala.concurrent.Future
-import org.mockito.Mockito._
-import pl.nadoba.currencyapi.testUtils.ActorSpec
 
 class CurrencyMonitoringStreamSpec extends ActorSpec("CurrencyMonitoringStreamSpec") with MockitoSugar {
 

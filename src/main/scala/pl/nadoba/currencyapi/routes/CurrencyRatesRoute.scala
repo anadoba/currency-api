@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext
 
 class CurrencyRatesRoute(currencyRatesService: CurrencyRatesService)(implicit ec: ExecutionContext) extends PlayJsonSupport {
 
-  import pl.nadoba.currencyapi.models.JsonFormats.{currencyApiErrorResponseWrites, currencyApiResponseWrites}
+  import pl.nadoba.currencyapi.formats.JsonFormats.{currencyApiErrorResponseWrites, currencyApiResponseWrites}
 
   private val zonedDateTimeU = Unmarshaller.strict[String, ZonedDateTime](ZonedDateTime.parse(_))
 

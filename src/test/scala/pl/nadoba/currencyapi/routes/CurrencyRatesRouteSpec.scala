@@ -1,21 +1,20 @@
-package pl.nadoba.currencyapi
+package pl.nadoba.currencyapi.routes
 
 import java.time.{ZoneId, ZonedDateTime}
 
 import akka.http.scaladsl.testkit.ScalatestRouteTest
+import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, WordSpec}
-import pl.nadoba.currencyapi.routes.CurrencyRatesRoute
-import pl.nadoba.currencyapi.service.CurrencyRatesService
-import org.mockito.Mockito._
 import pl.nadoba.currencyapi.models.{Currency, CurrencyRatesResponse}
+import pl.nadoba.currencyapi.service.CurrencyRatesService
 import play.api.libs.json.Json
 
 import scala.concurrent.Future
 
 class CurrencyRatesRouteSpec extends WordSpec with MustMatchers with ScalatestRouteTest with MockitoSugar {
 
-  import pl.nadoba.currencyapi.models.JsonFormats.currencyApiResponseWrites
+  import pl.nadoba.currencyapi.formats.JsonFormats.currencyApiResponseWrites
 
   "Currency Rates Route" should {
 
