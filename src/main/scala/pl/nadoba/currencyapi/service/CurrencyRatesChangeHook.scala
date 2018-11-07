@@ -5,18 +5,20 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.marshalling.Marshal
 import akka.http.scaladsl.model._
+import akka.stream.Materializer
 import de.heikoseeberger.akkahttpplayjson.PlayJsonSupport
 import pl.nadoba.currencyapi.config.CurrencyMonitoringConfig
 import pl.nadoba.currencyapi.models.Currency
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 trait CurrencyRatesChangeHook {
   def execute(currency: Currency): Future[Done]
 }
 
 class CurrencyRatesChangeHookImpl(monitoringConfig: CurrencyMonitoringConfig)
-  (implicit system: ActorSystem, ec: ExecutionContext) extends CurrencyRatesChangeHook with PlayJsonSupport {
+  (implicit system: ActorSystem, materializer: Materializer, ec: ExecutionContext) extends CurrencyRatesChangeHook with PlayJsonSupport {
 
   import pl.nadoba.currencyapi.formats.JsonFormats.currencyWrites
 
@@ -24,18 +26,22 @@ class CurrencyRatesChangeHookImpl(monitoringConfig: CurrencyMonitoringConfig)
 
   override def execute(currency: Currency): Future[Done] = {
 
-    for {
+    val result = for {
       requestEntity <- Marshal(currency).to[RequestEntity]
       postRequest = HttpRequest(
         method = HttpMethods.POST,
         uri = webhookUri,
         entity = requestEntity
       )
-      _ <- Http().singleRequest(postRequest)
-    } yield {
-      println(s"Webhook called - currency ${currency.symbol}")
-      Done
-    }
+      response <- Http().singleRequest(postRequest)
+      _ = println(s"Webhook called for currency ${currency.symbol} - response status ${response.status}")
+      _ = response.entity.discardBytes()
+    } yield Done
 
+    result.recover {
+      case ex =>
+        println(s"Error when calling webhook - $ex")
+        Done
+    }
   }
 }
